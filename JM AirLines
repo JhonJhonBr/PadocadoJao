@@ -1,0 +1,205 @@
+const readline = require('readline');
+
+// Dados do voo
+const assentos = {
+  A: Array(12).fill(false),
+  B: Array(12).fill(false)
+};
+
+const voosDisponiveis = ['Voo 1', 'Voo 2', 'Voo 3'];
+
+// Função para exibir o menu
+function exibirMenu() {
+  console.log('=== Companhia Aérea ===');
+  console.log('1 - Comprar Passagem');
+  console.log('2 - Consultar Voos');
+  console.log('3 - Exibir Mapa de Assentos');
+  console.log('4 - Emitir Ticket');
+  console.log('0 - Sair');
+  console.log('======================');
+}
+
+// Função para receber a opção do usuário
+function receberOpcao() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise(resolve => {
+    rl.question('Digite a opção desejada: ', opcao => {
+      rl.close();
+      resolve(opcao);
+    });
+  });
+}
+
+// Função para comprar passagem
+async function comprarPassagem() {
+  console.log('--- Comprar Passagem ---');
+
+  const nome = await receberEntrada('Nome: ');
+  const sobrenome = await receberEntrada('Sobrenome: ');
+  const idade = await receberEntrada('Idade: ');
+  const assento = await receberEntrada('Assento (Exemplo: A1): ');
+  const origem = await receberEntrada('Origem: ');
+  const destino = await receberEntrada('Destino: ');
+
+  // Verificar se o assento está disponível
+  const assentoValido = verificarAssento(assento);
+
+  if (!assentoValido) {
+    console.log('Assento inválido ou já ocupado.');
+    return;
+  }
+
+  // Verificar se a origem e o destino são válidos
+  const origemValida = verificarOrigem(origem);
+  const destinoValido = verificarDestino(destino);
+
+  if (!origemValida || !destinoValido) {
+    console.log('Origem ou destino inválidos.');
+    return;
+  }
+
+  // Marcar o assento como ocupado
+  marcarAssento(assento);
+
+  // Exibir resumo da compra
+  console.log('--- Resumo da Compra ---');
+  console.log('Nome:', nome);
+  console.log('Sobrenome:', sobrenome);
+  console.log('Idade:', idade);
+  console.log('Assento:', assento);
+  console.log('Origem:', origem);
+  console.log('Destino:', destino);
+  console.log('Valor a ser pago: R$ XXXX');
+}
+
+// Função para receber uma entrada do usuário
+function receberEntrada(pergunta) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+
+  return new Promise(resolve => {
+    rl.question(pergunta, resposta => {
+      rl.close();
+      resolve(resposta);
+    });
+  });
+}
+
+// Função para verificar se o assento é válido e está disponível
+function verificarAssento(assento) {
+  const fileira = assento.charAt(0).toUpperCase();
+  const numero = parseInt(assento.slice(1));
+
+  if (fileira !== 'A' && fileira !== 'B') {
+    return false;
+  }
+
+  if (isNaN(numero) || numero < 1 || numero > 12) {
+    return false;
+  }
+
+  const assentosFileira = assentos[fileira];
+  const assentoIndex = numero - 1;
+
+  if (assentosFileira[assentoIndex]) {
+    return false;
+  }
+
+  return true;
+}
+
+// Função para verificar se a origem é válida
+function verificarOrigem(origem) {
+  // Implemente a validação da origem aqui
+  return true;
+}
+
+// Função para verificar se o destino é válido
+function verificarDestino(destino) {
+  // Implemente a validação do destino aqui
+  return true;
+}
+
+// Função para marcar o assento como ocupado
+function marcarAssento(assento) {
+  const fileira = assento.charAt(0).toUpperCase();
+  const numero = parseInt(assento.slice(1));
+  const assentosFileira = assentos[fileira];
+  const assentoIndex = numero - 1;
+
+  assentosFileira[assentoIndex] = true;
+}
+
+// Função para consultar os voos disponíveis
+function consultarVoos() {
+  console.log('--- Voos Disponíveis ---');
+  for (const voo of voosDisponiveis) {
+    console.log(voo);
+  }
+  console.log('------------------------');
+}
+
+// Função para exibir o mapa de assentos
+function exibirMapaAssento() {
+  console.log('--- Mapa de Assentos ---');
+  console.log('Assentos A:');
+  for (let i = 0; i < assentos.A.length; i++) {
+    const assento = assentos.A[i] ? 'X' : 'O';
+    console.log('A' + (i + 1) + ': ' + assento);
+  }
+  console.log('Assentos B:');
+  for (let i = 0; i < assentos.B.length; i++) {
+    const assento = assentos.B[i] ? 'X' : 'O';
+    console.log('B' + (i + 1) + ': ' + assento);
+  }
+  console.log('-----------------------');
+}
+
+// Função para emitir o ticket
+function emitirTicket() {
+  console.log('--- Ticket ---');
+  // Implemente a lógica para exibir o ticket aqui
+  console.log('-----------------------');
+}
+
+// Função principal
+async function main() {
+  let opcao = '';
+
+  while (opcao !== '0') {
+    exibirMenu();
+    opcao = await receberOpcao();
+
+    switch (opcao) {
+      case '1':
+        await comprarPassagem();
+        break;
+      case '2':
+        consultarVoos();
+        break;
+      case '3':
+        exibirMapaAssento();
+        break;
+      case '4':
+        emitirTicket();
+        break;
+      case '0':
+        console.log('Encerrando o programa...');
+        break;
+      default:
+        console.log('Opção inválida.');
+        break;
+    }
+
+    console.log('\n'); // Pular linha antes de retornar ao menu
+  }
+}
+
+// Executar o programa
+main();
