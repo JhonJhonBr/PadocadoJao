@@ -201,5 +201,5 @@ async function main() {
   }
 }
 
-// Executar o programa
+// Executar este programa
 main();
